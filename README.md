@@ -26,7 +26,7 @@
 - 컨테이너 실습 이미지: `ubuntu:24.04` (`Ubuntu 24.04.4 LTS`)
 - 커스텀 웹 서버 베이스 이미지: `nginx:1.29.7-alpine` (`NGINX 1.29.7`, `Alpine Linux 3.23.3`)
 
-재현성을 높이기 위해 `latest` 같은 가변 태그 대신 고정 태그를 사용했습니다. 이렇게 하면 Intel Mac이든 Apple Silicon Mac이든 같은 태그에서 각 아키텍처에 맞는 이미지를 내려받아 동일한 구성으로 다시 빌드하기 쉬워집니다.
+재현성을 높이기 위해 커스텀 이미지 제작과 주요 실습 이미지에는 `latest` 같은 가변 태그 대신 고정 태그를 사용했습니다. 이번 문서에서는 `ubuntu:24.04`, `nginx:1.29.7-alpine`처럼 버전이 고정된 태그를 기준으로 기록했습니다. `hello-world`는 설치 점검용 공식 예시 이미지라 기본 태그를 그대로 사용했습니다.
 
 서울캠퍼스 환경에서는 `sudo` 사용이 제한될 수 있어 OrbStack을 사용했습니다. OrbStack이 실행 중이면 터미널에서는 일반 Docker 환경과 동일하게 `docker` 명령을 사용할 수 있습니다.
 
@@ -331,7 +331,7 @@ hi
 
 ## 13. Git 설정 및 GitHub / VS Code 연동
 
-Git 사용자 정보와 원격 저장소 연결 상태를 확인했습니다. 이 저장소에서는 글로벌 설정이 아니라 로컬 설정을 사용해 `user.name=zxcv718`, `user.email=tkim0156@gmail.com`으로 덮어썼습니다.
+Git 사용자 정보와 원격 저장소 연결 상태를 확인했습니다. 이 저장소에서는 글로벌 설정이 아니라 로컬 설정을 사용했고, 실제 `user.name`, `user.email` 값은 개인정보 보호를 위해 README와 로그에서 마스킹했습니다.
 
 ```bash
 $ git config --list
@@ -339,8 +339,8 @@ $ git remote -v
 ```
 
 ```text
-user.name=zxcv718
-user.email=tkim0156@gmail.com
+user.name=<masked>
+user.email=<masked>
 origin  https://github.com/zxcv718/cs_1.git
 ```
 

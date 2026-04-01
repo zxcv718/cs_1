@@ -1,11 +1,22 @@
-$ docker pull hello-world
-Using default tag: latest
+$ docker pull hello-world:latest
 latest: Pulling from library/hello-world
 Digest: sha256:452a468a4bf985040037cb6d5392410206e47db9bf5b7278d281f94d1c2d0931
 Status: Image is up to date for hello-world:latest
 docker.io/library/hello-world:latest
 
-$ docker run --name hello-ops hello-world
+$ docker pull ubuntu:24.04
+24.04: Pulling from library/ubuntu
+Digest: sha256:186072bba1b2f436cbb91ef2567abca677337cfc786c86e107d25b7072feef0c
+Status: Image is up to date for ubuntu:24.04
+docker.io/library/ubuntu:24.04
+
+$ docker pull nginx:1.29.7-alpine
+1.29.7-alpine: Pulling from library/nginx
+Digest: sha256:e7257f1ef28ba17cf7c248cb8ccf6f0c6e0228ab9c315c152f9c203cd34cf6d1
+Status: Image is up to date for nginx:1.29.7-alpine
+docker.io/library/nginx:1.29.7-alpine
+
+$ docker run --name hello-ops-fixed hello-world:latest
 
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
@@ -30,23 +41,31 @@ For more examples and ideas, visit:
 
 
 $ docker images
-REPOSITORY     TAG       IMAGE ID       CREATED             SIZE
-codyssey-web   1.0       11143b5292cf   About an hour ago   61.6MB
-nginx          alpine    e7b8033f1661   7 days ago          61.6MB
-hello-world    latest    eb84fdc6f2a3   8 days ago          5.2kB
-ubuntu         latest    e3847ac055b4   5 weeks ago         101MB
+REPOSITORY     TAG             IMAGE ID       CREATED       SIZE
+codyssey-web   1.0             11143b5292cf   3 hours ago   61.6MB
+nginx          1.29.7-alpine   e7b8033f1661   7 days ago    61.6MB
+hello-world    latest          eb84fdc6f2a3   8 days ago    5.2kB
+ubuntu         24.04           e3847ac055b4   5 weeks ago   101MB
 
 $ docker ps
-CONTAINER ID   IMAGE     COMMAND            CREATED             STATUS             PORTS     NAMES
-6db9a347c268   ubuntu    "sleep infinity"   About an hour ago   Up About an hour             vol-test2
+CONTAINER ID   IMAGE                 COMMAND                  CREATED             STATUS             PORTS                                     NAMES
+fb9efb648db1   ubuntu:24.04          "sleep infinity"         About an hour ago   Up About an hour                                             vol-test2-evidence
+75a75dcd00e4   nginx:1.29.7-alpine   "/docker-entrypoint.…"   About an hour ago   Up About an hour   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp   bind-web
+ad169e45ee81   codyssey-web:1.0      "/docker-entrypoint.…"   About an hour ago   Up About an hour   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   codyssey-web-8080
+98bea21c10ad   codyssey-web:1.0      "/docker-entrypoint.…"   About an hour ago   Up About an hour   0.0.0.0:8082->80/tcp, [::]:8082->80/tcp   codyssey-build-check
 
 $ docker ps -a
-CONTAINER ID   IMAGE         COMMAND            CREATED                  STATUS                              PORTS     NAMES
-456d04a5bd6d   hello-world   "/hello"           Less than a second ago   Exited (0) Less than a second ago             hello-ops
-6db9a347c268   ubuntu        "sleep infinity"   About an hour ago        Up About an hour                              vol-test2
-dc99b4e68b7c   hello-world   "/hello"           About an hour ago        Exited (0) About an hour ago                  hello-temp
+CONTAINER ID   IMAGE                 COMMAND                  CREATED                  STATUS                              PORTS                                     NAMES
+ea747a85eb78   hello-world:latest    "/hello"                 Less than a second ago   Exited (0) Less than a second ago                                             hello-ops-fixed
+fb9efb648db1   ubuntu:24.04          "sleep infinity"         About an hour ago        Up About an hour                                                              vol-test2-evidence
+75a75dcd00e4   nginx:1.29.7-alpine   "/docker-entrypoint.…"   About an hour ago        Up About an hour                    0.0.0.0:8081->80/tcp, [::]:8081->80/tcp   bind-web
+ad169e45ee81   codyssey-web:1.0      "/docker-entrypoint.…"   About an hour ago        Up About an hour                    0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   codyssey-web-8080
+98bea21c10ad   codyssey-web:1.0      "/docker-entrypoint.…"   About an hour ago        Up About an hour                    0.0.0.0:8082->80/tcp, [::]:8082->80/tcp   codyssey-build-check
+48fae9a133d3   ubuntu:24.04          "sleep infinity"         About an hour ago        Exited (137) About an hour ago                                                ubuntu-lab
+f52e210ec75c   hello-world           "/hello"                 2 hours ago              Exited (0) 2 hours ago                                                        hello-check
+456d04a5bd6d   hello-world           "/hello"                 2 hours ago              Exited (0) 2 hours ago                                                        hello-ops
 
-$ docker logs hello-ops
+$ docker logs hello-ops-fixed
 
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
@@ -71,6 +90,9 @@ For more examples and ideas, visit:
 
 
 $ docker stats --no-stream
-CONTAINER ID   NAME        CPU %     MEM USAGE / LIMIT   MEM %     NET I/O         BLOCK I/O   PIDS
-6db9a347c268   vol-test2   0.00%     88KiB / 7.807GiB    0.00%     1.77kB / 126B   0B / 0B     1
+CONTAINER ID   NAME                   CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O         PIDS
+fb9efb648db1   vol-test2-evidence     0.00%     700KiB / 7.807GiB     0.01%     1.45kB / 126B     0B / 0B           1
+75a75dcd00e4   bind-web               0.00%     7.762MiB / 7.807GiB   0.10%     4.89kB / 4.37kB   1.74MB / 8.19kB   11
+ad169e45ee81   codyssey-web-8080      0.00%     7.539MiB / 7.807GiB   0.09%     4.97kB / 3.97kB   1.91MB / 8.19kB   11
+98bea21c10ad   codyssey-build-check   0.00%     7.176MiB / 7.807GiB   0.09%     1.75kB / 126B     942kB / 8.19kB    11
 
