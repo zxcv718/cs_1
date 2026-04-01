@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Local editor metadata
+.vscode/
+
+# Local environment files
+.env
+
+# Temporary practice workspace used only to generate logs
+practice/
+
+# Generated from the assignment PDF for local reference
+mission1-extracted.txt
+mission1.pdf
+
+# Keep only the submission README in this repo
+*.md
+!README.md
