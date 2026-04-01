@@ -1,0 +1,18 @@
+$ docker run -d --name codyssey-web-8080 -p 8080:80 codyssey-web:1.0
+ad169e45ee81a09f55cdd99c6d0b7c78006ed215e3afc8a4600f565a65423bf2
+
+$ curl -s http://localhost:8080
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codyssey Week1</title>
+  </head>
+  <body>
+    <h1>Codyssey Week1 Custom Web Server</h1>
+    <p>Docker custom image is working.</p>
+    <p>Mode: required-assignment</p>
+  </body>
+</html>
+

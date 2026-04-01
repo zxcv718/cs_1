@@ -1,0 +1,22 @@
+$ docker volume create mydata-evidence
+mydata-evidence
+
+$ docker run -d --name vol-test-evidence -v mydata-evidence:/data ubuntu:24.04 sleep infinity
+bb371b6e39ef3f7e7d7284348d41a50126b3b939398bdb4b485609eb422e4c37
+
+$ docker exec vol-test-evidence bash -lc "echo hi > /data/hello.txt && cat /data/hello.txt"
+hi
+
+$ docker rm -f vol-test-evidence
+vol-test-evidence
+
+$ docker run -d --name vol-test2-evidence -v mydata-evidence:/data ubuntu:24.04 sleep infinity
+fb9efb648db1f2a7030ddca79695183a6ea7ff1277118449016a71b79df01a4b
+
+$ docker exec vol-test2-evidence bash -lc "cat /data/hello.txt"
+hi
+
+$ docker volume ls --filter name=mydata-evidence
+DRIVER    VOLUME NAME
+local     mydata-evidence
+

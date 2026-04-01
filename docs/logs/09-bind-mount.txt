@@ -1,0 +1,37 @@
+$ docker run -d --name bind-web -p 8081:80 -v "$(pwd)/site:/usr/share/nginx/html" nginx:1.29.7-alpine
+75a75dcd00e4497a4fdf9f2a6fa1c66635fe2a6cae9f64d3aa206013baecc3be
+
+$ perl -0pi -e 's/Mode: after-bind-mount-change/Mode: before-bind-mount-change/' site/index.html
+
+$ curl -s http://localhost:8081
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codyssey Week1</title>
+  </head>
+  <body>
+    <h1>Codyssey Week1 Custom Web Server</h1>
+    <p>Docker custom image is working.</p>
+    <p>Mode: before-bind-mount-change</p>
+  </body>
+</html>
+
+$ perl -0pi -e 's/Mode: before-bind-mount-change/Mode: after-bind-mount-change/' site/index.html
+
+$ curl -s http://localhost:8081
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codyssey Week1</title>
+  </head>
+  <body>
+    <h1>Codyssey Week1 Custom Web Server</h1>
+    <p>Docker custom image is working.</p>
+    <p>Mode: after-bind-mount-change</p>
+  </body>
+</html>
+
