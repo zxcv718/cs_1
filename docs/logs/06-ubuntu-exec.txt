@@ -1,0 +1,37 @@
+$ docker run -d --name ubuntu-lab ubuntu:24.04 sleep infinity
+48fae9a133d31edfc56fb671211ea82858f631e8321afa8005ab2d0c33d3741a
+
+$ docker exec ubuntu-lab ls
+bin
+boot
+dev
+etc
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+
+$ docker exec ubuntu-lab bash -lc "echo inside-container"
+inside-container
+
+$ docker ps --filter name=ubuntu-lab
+CONTAINER ID   IMAGE          COMMAND            CREATED        STATUS                  PORTS     NAMES
+48fae9a133d3   ubuntu:24.04   "sleep infinity"   1 second ago   Up Less than a second             ubuntu-lab
+
+$ docker stop ubuntu-lab
+ubuntu-lab
+
+$ docker ps -a --filter name=ubuntu-lab
+CONTAINER ID   IMAGE          COMMAND            CREATED          STATUS                                PORTS     NAMES
+48fae9a133d3   ubuntu:24.04   "sleep infinity"   11 seconds ago   Exited (137) Less than a second ago             ubuntu-lab
+

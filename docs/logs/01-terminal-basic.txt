@@ -1,0 +1,67 @@
+$ pwd
+/Users/ilim/Desktop/codyssey/week1/cs_1
+
+$ ls -la
+total 1408
+drwxr-xr-x  17 ilim  staff     544 Apr  1 17:42 .
+drwxr-xr-x@  4 ilim  staff     128 Apr  1 17:42 ..
+drwxr-xr-x  10 ilim  staff     320 Apr  1 17:43 .git
+-rw-r--r--   1 ilim  staff     310 Apr  1 16:14 .gitignore
+-rw-r--r--@  1 ilim  staff     223 Apr  1 17:10 Dockerfile
+-rw-r--r--   1 ilim  staff   23739 Apr  1 17:41 README.md
+drwxr-xr-x@  4 ilim  staff     128 Apr  1 17:11 docs
+-rw-r--r--   1 ilim  staff   13937 Apr  1 16:05 mission1-extracted.txt
+-rw-r--r--@  1 ilim  staff  567544 Apr  1 13:01 mission1.pdf
+drwxr-xr-x@  5 ilim  staff     160 Apr  1 17:50 practice
+drwxr-xr-x@  3 ilim  staff      96 Apr  1 17:11 site
+-rw-r--r--@  1 ilim  staff   16304 Apr  1 15:37 week1-assignment-explanation-script.md
+-rw-r--r--@  1 ilim  staff   30606 Apr  1 13:08 week1-assignment-guide.md
+-rw-r--r--@  1 ilim  staff    2295 Apr  1 15:45 week1-basic-execution-plan.md
+-rw-r--r--@  1 ilim  staff   31920 Apr  1 13:23 week1-complete-scenario.md
+-rw-r--r--@  1 ilim  staff    5439 Apr  1 15:27 week1-evidence-checklist.md
+-rw-r--r--@  1 ilim  staff    7042 Apr  1 13:35 week1-preflight-checklist.md
+
+$ mkdir -p practice/terminal-log/archive
+
+$ cd practice/terminal-log
+/Users/ilim/Desktop/codyssey/week1/cs_1/practice/terminal-log
+
+$ touch empty.txt
+
+$ ls -la
+total 0
+drwxr-xr-x  4 ilim  staff  128 Apr  1 17:50 .
+drwxr-xr-x@ 5 ilim  staff  160 Apr  1 17:50 ..
+drwxr-xr-x  2 ilim  staff   64 Apr  1 17:50 archive
+-rw-r--r--  1 ilim  staff    0 Apr  1 17:50 empty.txt
+
+$ printf "hello codyssey week1\n" > memo.txt
+
+$ cat memo.txt
+hello codyssey week1
+
+$ cp memo.txt copy.txt
+
+$ mv copy.txt archive/memo-renamed.txt
+
+$ ls -la
+total 8
+drwxr-xr-x  5 ilim  staff  160 Apr  1 17:50 .
+drwxr-xr-x@ 5 ilim  staff  160 Apr  1 17:50 ..
+drwxr-xr-x  3 ilim  staff   96 Apr  1 17:50 archive
+-rw-r--r--  1 ilim  staff    0 Apr  1 17:50 empty.txt
+-rw-r--r--  1 ilim  staff   21 Apr  1 17:50 memo.txt
+
+$ ls -la archive
+total 8
+drwxr-xr-x  3 ilim  staff   96 Apr  1 17:50 .
+drwxr-xr-x  5 ilim  staff  160 Apr  1 17:50 ..
+-rw-r--r--  1 ilim  staff   21 Apr  1 17:50 memo-renamed.txt
+
+$ rm archive/memo-renamed.txt
+
+$ ls -la archive
+total 0
+drwxr-xr-x  2 ilim  staff   64 Apr  1 17:50 .
+drwxr-xr-x  5 ilim  staff  160 Apr  1 17:50 ..
+
