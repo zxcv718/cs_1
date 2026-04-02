@@ -231,10 +231,11 @@ inside-container
 
 기존 베이스 이미지는 `nginx:1.29.7-alpine`을 선택했습니다. 이유는 웹 서버 기능이 이미 검증된 상태이고, 과제 요구사항인 정적 웹 콘텐츠 제공, 포트 매핑, 바인드 마운트 실습을 가장 단순하게 설명할 수 있기 때문입니다.
 
-적용한 커스텀 포인트는 총 4개이고, 이 중 핵심 커스텀은 정적 웹 콘텐츠 교체입니다.
+적용한 커스텀 포인트는 총 5개이고, 이 중 핵심 커스텀은 정적 웹 콘텐츠 교체입니다.
 
 - `LABEL org.opencontainers.image.title="codyssey-week1-web"`: 이미지 제목 메타데이터를 붙여 어떤 이미지인지 식별하기 쉽게 했습니다.
 - `LABEL org.opencontainers.image.description="Week1 custom nginx image"`: 이미지 설명 메타데이터를 붙여 용도를 더 분명하게 했습니다.
+- `ENV APP_ENV=week1`: 컨테이너 내부 환경변수를 지정해, 과제 요구사항의 기본 기능 예시 중 하나인 환경변수 설정을 최소 단위로 반영했습니다.
 - `COPY site/ /usr/share/nginx/html/`: 제가 만든 정적 HTML을 NGINX 기본 웹 루트에 복사해, 기본 콘텐츠를 제 과제용 웹 페이지로 교체했습니다.
 - `EXPOSE 80`: 컨테이너 내부 서비스 포트가 80번이라는 점을 문서화했습니다.
 
@@ -243,6 +244,7 @@ FROM nginx:1.29.7-alpine
 
 LABEL org.opencontainers.image.title="codyssey-week1-web"
 LABEL org.opencontainers.image.description="Week1 custom nginx image"
+ENV APP_ENV=week1
 
 COPY site/ /usr/share/nginx/html/
 EXPOSE 80
