@@ -17,3 +17,4 @@ mission1.pdf
 # Keep only the submission README in this repo
 *.md
 !README.md
+evaluation-item-script.txt
