@@ -229,12 +229,12 @@ inside-container
 
 기존 베이스 이미지는 `nginx:1.29.7-alpine`을 선택했습니다. 이유는 웹 서버 기능이 이미 검증된 상태이고, 과제 요구사항인 정적 웹 콘텐츠 제공, 포트 매핑, 바인드 마운트 실습을 가장 단순하게 설명할 수 있기 때문입니다.
 
-적용한 커스텀 포인트는 아래와 같습니다.
+적용한 커스텀 포인트는 총 4개이고, 이 중 핵심 커스텀은 정적 웹 콘텐츠 교체입니다.
 
-- `LABEL`: 이미지 메타데이터를 붙여 어떤 이미지인지 식별하기 쉽게 했습니다.
-- `ENV APP_MODE=required`: 환경 변수 예시를 남겼습니다.
-- `COPY site/ /usr/share/nginx/html/`: 제가 만든 정적 HTML을 NGINX 기본 웹 루트에 복사했습니다.
-- `EXPOSE 80`: 컨테이너 내부 서비스 포트를 문서화했습니다.
+- `LABEL org.opencontainers.image.title="codyssey-week1-web"`: 이미지 제목 메타데이터를 붙여 어떤 이미지인지 식별하기 쉽게 했습니다.
+- `LABEL org.opencontainers.image.description="Week1 custom nginx image"`: 이미지 설명 메타데이터를 붙여 용도를 더 분명하게 했습니다.
+- `COPY site/ /usr/share/nginx/html/`: 제가 만든 정적 HTML을 NGINX 기본 웹 루트에 복사해, 기본 콘텐츠를 제 과제용 웹 페이지로 교체했습니다.
+- `EXPOSE 80`: 컨테이너 내부 서비스 포트가 80번이라는 점을 문서화했습니다.
 
 ```dockerfile
 FROM nginx:1.29.7-alpine
@@ -242,7 +242,6 @@ FROM nginx:1.29.7-alpine
 LABEL org.opencontainers.image.title="codyssey-week1-web"
 LABEL org.opencontainers.image.description="Week1 custom nginx image"
 
-ENV APP_MODE=required
 COPY site/ /usr/share/nginx/html/
 EXPOSE 80
 ```
@@ -432,12 +431,20 @@ $ docker rm -f bind-web 2>/dev/null || true
 $ docker run -d --name bind-web -p 8081:80 -v "$(pwd)/site:/usr/share/nginx/html" nginx:1.29.7-alpine
 ```
 
+첫 번째 줄의 `docker rm -f bind-web 2>/dev/null || true`는 같은 이름의 기존 컨테이너가 남아 있을 때를 대비한 정리 명령입니다. `rm -f`는 실행 중이든 아니든 강제로 삭제하겠다는 뜻이고, `2>/dev/null`은 "컨테이너가 없어서 발생하는 에러 메시지"를 화면에 보이지 않게 버리는 뜻입니다. 마지막의 `|| true`는 앞 명령이 실패하더라도 전체 흐름을 멈추지 않고 다음 명령으로 넘어가게 하기 위한 안전장치입니다.
+
+두 번째 줄의 `docker run -d --name bind-web -p 8081:80 -v "$(pwd)/site:/usr/share/nginx/html" nginx:1.29.7-alpine`가 바인드 마운트의 핵심입니다. `-d`는 컨테이너를 백그라운드에서 실행하고, `--name bind-web`은 컨테이너 이름을 `bind-web`으로 붙입니다. `-p 8081:80`은 호스트의 8081 포트를 컨테이너의 80 포트와 연결한다는 뜻입니다. `-v "$(pwd)/site:/usr/share/nginx/html"`은 현재 저장소 안의 `site` 폴더를 컨테이너 내부 NGINX 웹 루트에 직접 연결한다는 뜻입니다. 여기서 `$(pwd)`는 "현재 작업 디렉토리의 절대 경로"를 치환하는 셸 문법이므로, 결국 이 명령은 "내 컴퓨터의 site 폴더를 컨테이너 안 `/usr/share/nginx/html`에 그대로 연결하라"는 의미가 됩니다. 마지막의 `nginx:1.29.7-alpine`은 이 컨테이너가 사용할 베이스 이미지입니다.
+
 이후 변경 전 상태를 만들고 확인합니다.
 
 ```bash
 $ perl -0pi -e 's/Mode: after-bind-mount-change/Mode: before-bind-mount-change/' site/index.html
 $ curl -s http://localhost:8081
 ```
+
+첫 번째 줄의 Perl 명령은 [site/index.html](site/index.html) 파일 안 문자열을 직접 치환하는 명령입니다. 여기서 `perl`은 Perl 인터프리터를 실행한다는 뜻입니다. `-0`은 파일 전체를 한 번에 읽어 처리하겠다는 옵션이고, `-p`는 읽은 내용을 처리한 뒤 다시 출력하는 기본 반복 구조를 켜는 옵션입니다. `-i`는 그 결과를 화면에만 출력하지 않고 원본 파일에 바로 덮어쓰는 옵션입니다. `-e`는 뒤에 오는 짧은 Perl 코드를 직접 실행하겠다는 뜻입니다. 실제 코드인 `s/A/B/`는 substitute, 즉 문자열 치환 문법으로 A를 B로 바꾸라는 의미입니다. 이번 명령에서는 `Mode: after-bind-mount-change`를 `Mode: before-bind-mount-change`로 바꾸고 있습니다. 이 옵션 조합 때문에 별도의 편집기를 열지 않고도 파일 내용을 즉시 바꿀 수 있습니다.
+
+두 번째 줄의 `curl -s http://localhost:8081`은 브라우저 대신 터미널에서 8081 포트로 요청을 보내 응답 HTML을 확인하는 명령입니다. `-s`는 진행률 같은 불필요한 메시지를 숨기는 옵션입니다. 이 시점에 `before-bind-mount-change`가 출력된다면, 호스트 파일의 변경 사항을 8081 컨테이너가 이미 읽고 있다는 뜻입니다.
 
 정상이라면 `Mode: before-bind-mount-change`가 출력됩니다.
 
@@ -447,6 +454,8 @@ $ curl -s http://localhost:8081
 $ perl -0pi -e 's/Mode: before-bind-mount-change/Mode: after-bind-mount-change/' site/index.html
 $ curl -s http://localhost:8081
 ```
+
+이 단계는 방금 했던 작업을 반대로 수행하는 것입니다. 앞에서 설명한 `perl -0pi -e` 옵션 구조는 동일하고, 이번에는 치환 방향만 반대로 바꿔 `before-bind-mount-change`를 다시 `after-bind-mount-change`로 되돌립니다. 그 뒤 같은 8081 포트로 다시 요청을 보내 결과가 즉시 바뀌는지 확인합니다. 여기서 핵심은 컨테이너를 다시 빌드하거나 재실행하지 않았는데도 응답 내용이 바뀐다는 점입니다.
 
 정상이라면 `Mode: after-bind-mount-change`가 출력됩니다. 이 과정으로 호스트 파일 수정이 컨테이너에 즉시 반영되는 것을 확인할 수 있습니다.
 
@@ -464,6 +473,20 @@ $ docker rm -f vol-test-evidence
 $ docker run -d --name vol-test2-evidence -v mydata-evidence:/data ubuntu:24.04 sleep infinity
 $ docker exec vol-test2-evidence bash -lc "cat /data/hello.txt"
 ```
+
+첫 번째 줄의 `docker rm -f vol-test-evidence vol-test2-evidence 2>/dev/null || true`는 이전 실습에서 남아 있을 수 있는 컨테이너를 미리 정리하는 명령입니다. 두 번째 줄의 `docker volume rm mydata-evidence 2>/dev/null || true`는 같은 이름의 기존 볼륨이 남아 있을 가능성까지 정리해서, 매번 완전히 같은 초기 상태에서 실습을 다시 시작하기 위한 준비 단계입니다.
+
+세 번째 줄의 `docker volume create mydata-evidence`는 Docker가 관리하는 이름 있는 볼륨을 만드는 명령입니다. 여기서 `mydata-evidence`는 사람이 이해하기 쉬운 볼륨 이름입니다. 이 볼륨이 실제로 데이터를 붙잡아 두는 저장공간 역할을 합니다.
+
+네 번째 줄의 `docker run -d --name vol-test-evidence -v mydata-evidence:/data ubuntu:24.04 sleep infinity`는 첫 번째 Ubuntu 컨테이너를 실행하면서 방금 만든 볼륨을 `/data` 경로에 연결하는 명령입니다. `-v mydata-evidence:/data`는 "이름이 `mydata-evidence`인 Docker 볼륨을 컨테이너 내부 `/data` 디렉토리에 연결하라"는 뜻입니다. 마지막의 `sleep infinity`는 컨테이너가 바로 종료되지 않고 계속 살아 있게 만들기 위한 메인 프로세스입니다.
+
+다섯 번째 줄의 `docker exec vol-test-evidence bash -lc "echo hi > /data/hello.txt && cat /data/hello.txt"`는 실행 중인 첫 번째 컨테이너 안에서 파일을 생성하고 바로 읽는 명령입니다. 여기서 중요한 점은 파일을 `/data/hello.txt`에 쓴다는 것입니다. `/data`는 컨테이너 내부 경로처럼 보이지만, 실제로는 방금 연결한 Docker 볼륨을 가리키므로 이 파일은 컨테이너 자체가 아니라 볼륨 쪽에 저장됩니다.
+
+여섯 번째 줄의 `docker rm -f vol-test-evidence`는 첫 번째 컨테이너를 삭제하는 단계입니다. 이 시점에 확인하고 싶은 핵심은 "컨테이너가 사라져도 데이터가 남는가"입니다. 데이터가 컨테이너 내부에만 있었다면 이 단계에서 같이 사라졌을 가능성이 큽니다.
+
+일곱 번째 줄의 `docker run -d --name vol-test2-evidence -v mydata-evidence:/data ubuntu:24.04 sleep infinity`는 두 번째 Ubuntu 컨테이너를 실행하면서, 같은 `mydata-evidence` 볼륨을 다시 `/data`에 연결하는 명령입니다. 즉 첫 번째 컨테이너와는 다른 컨테이너지만, 데이터 저장공간은 동일한 볼륨을 다시 사용합니다.
+
+여덟 번째 줄의 `docker exec vol-test2-evidence bash -lc "cat /data/hello.txt"`는 두 번째 컨테이너 안에서 이전 파일을 다시 읽는 단계입니다. 여기서 `hi`가 그대로 출력되면, 컨테이너를 삭제했는데도 데이터가 남아 있었다는 뜻이고, 이것이 바로 Docker 볼륨의 영속성입니다.
 
 두 번 모두 `hi`가 출력되면 볼륨이 컨테이너 삭제 후에도 데이터를 유지한 것입니다.
 
